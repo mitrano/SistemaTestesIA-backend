@@ -1,4 +1,5 @@
 from fastapi import FastAPI, HTTPException
+from fastapi import Body
 from pydantic import BaseModel
 from typing import List
 from fastapi.middleware.cors import CORSMiddleware
@@ -44,9 +45,9 @@ async def lifespan(app: FastAPI):
     conn = sqlite3.connect(DATABASE)
     cursor = conn.cursor()
 
-    cursor.execute('''
-        DROP TABLE tests 
-    ''')
+    # cursor.execute('''
+    #     DROP TABLE tests 
+    # ''')
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS tests (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -196,3 +197,21 @@ def delete_test(test_id: int):
     conn.commit()
     conn.close()
     return {"message": "Teste excluído"}
+
+@app.put("/tests/{test_id}/questions")
+def update_test_questions(test_id: int, questions: dict = Body(...)):
+    try:
+        questions_json = json.dumps(questions)
+    except Exception:
+        raise HTTPException(status_code=400, detail="Formato de perguntas inválido. Deve ser um JSON.")
+
+    conn = sqlite3.connect(DATABASE)
+    cursor = conn.cursor()
+    cursor.execute(
+        "UPDATE tests SET questions = ? WHERE id = ?",
+        (questions_json, test_id)
+    )
+    conn.commit()
+    conn.close()
+
+    return {"message": "Perguntas atualizadas com sucesso"}
