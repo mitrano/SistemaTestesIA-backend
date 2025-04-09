@@ -1,5 +1,6 @@
 from fastapi import FastAPI, HTTPException
 from fastapi import Body
+from fastapi import Request
 from pydantic import BaseModel
 from typing import List
 from fastapi.middleware.cors import CORSMiddleware
@@ -215,3 +216,71 @@ def update_test_questions(test_id: int, questions: dict = Body(...)):
     conn.close()
 
     return {"message": "Perguntas atualizadas com sucesso"}
+
+class EvaluationRequest(BaseModel):
+    question: str
+    correct_answer: str
+    user_answer: str
+
+@app.post("/evaluate")
+async def evaluate_answer(request: EvaluationRequest):  
+    if not request.question or not request.correct_answer:
+        raise HTTPException(status_code=400, detail="Pergunta e gabarito são obrigatórios.")
+
+    prompt = f"""
+    Você é um avaliador de questões discursivas. 
+    Abaixo está uma pergunta, uma resposta correta (gabarito) e a resposta de um aluno.
+
+    Sua tarefa é:
+    1. Comparar a resposta do aluno com o gabarito.
+    2. Atribuir uma nota de 0 a 1:
+       - 1 se estiver completamente correta,
+       - Entre 0.1 e 0.9 se estiver parcialmente correta,
+       - 0 se estiver incorreta ou vazia.
+    3. Justificar brevemente a nota com base na comparação.
+
+    Formato da resposta (em JSON):
+    {{
+      "score": <número entre 0 e 1>,
+      "justification": "<explicação curta>"
+    }}
+
+    Pergunta: {request.question}
+    Gabarito: {request.correct_answer}
+    Resposta do aluno: {request.user_answer}
+    """
+
+    try:
+        if OPENAI_API_KEY:
+            completion = client.chat.completions.create(
+                model="gpt-4",
+                messages=[{"role": "user", "content": prompt}],
+                temperature=0.0,
+                max_tokens=300,
+            )
+            content = completion.choices[0].message.content.strip()
+        elif GEMINI_API_KEY:
+            model = genai.GenerativeModel("gemini-1.5-flash")
+            response = model.generate_content(prompt)
+            content = response.text.strip()
+        else:
+            raise HTTPException(status_code=500, detail="Nenhuma IA configurada corretamente.")
+
+        # Tenta extrair JSON mesmo de texto misturado
+        try:
+            json_start = content.find('{')
+            json_end = content.rfind('}') + 1
+            json_str = content[json_start:json_end]
+            result = json.loads(json_str)
+        except Exception as e:
+            raise ValueError(f"Erro ao interpretar resposta como JSON: {e}")
+
+        score = float(result["score"])
+        justification = result["justification"]
+        return {
+            "score": round(max(0.0, min(score, 1.0)), 2),
+            "justification": justification
+        }
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Erro ao avaliar resposta: {str(e)}")
