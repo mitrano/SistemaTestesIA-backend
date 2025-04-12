@@ -78,7 +78,9 @@ async def create_test(request: TestRequest):
     Tipo de questão: {request.question_type}.
     Nível de dificuldade: {request.difficulty}.
 
-    Caso o tipo de questão seja MULTIPLE_CHOICE, o resultado deve estar **exclusivamente** no seguinte formato JSON:
+    Caso o tipo de questão solictada acima seja "mixed" você deve gerar metade das questões como múltipla escolha e a outra metada discursiva.
+
+    Caso o tipo de questão gerada por você seja MULTIPLE_CHOICE, o resultado deve estar **exclusivamente** no seguinte formato JSON:
     {{
     "questions": [
         {{
@@ -91,7 +93,7 @@ async def create_test(request: TestRequest):
     ]
     }}
 
-        Caso o tipo de questão seja discursive, o resultado deve estar **exclusivamente** no seguinte formato JSON:
+        Caso o tipo de questão gerada por você seja discursive, o resultado deve estar **exclusivamente** no seguinte formato JSON:
     {{
     "questions": [
         {{
@@ -103,8 +105,6 @@ async def create_test(request: TestRequest):
         ...
     ]
     }}
-
-
 
     """
 
