@@ -11,6 +11,14 @@ Este projeto é um sistema backend desenvolvido em Python que utiliza inteligên
 
 ---
 
+## Diagrama do Sistema
+
+<p align="center">
+  <img src="docs/Diagramadosistema.jpg" alt="Diagrama da Arquitetura do Sistema" width="600">
+</p>
+
+---
+
 ## 📁 Estrutura do Projeto
 
 - `main.py` — Arquivo principal com a API desenvolvida usando FastAPI.
