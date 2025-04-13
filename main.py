@@ -1,15 +1,25 @@
+# Importa o FastAPI para criar a aplicação web
 from fastapi import FastAPI, HTTPException
+# Importa o Body para capturar corpo de requisições
 from fastapi import Body
-from fastapi import Request
+# Importa BaseModel do Pydantic para validação de dados
 from pydantic import BaseModel
+# Importa List da biblioteca typing para anotar listas
 from typing import List
+# Importa middleware para habilitar CORS
 from fastapi.middleware.cors import CORSMiddleware
+# Importa SQLite para persistência local dos testes
 import sqlite3
+# Importa JSON para serialização e desserialização
 import json
+# Importa os para acessar variáveis de ambiente
 import os
+# Importa a biblioteca do Gemini (Google)
 import google.generativeai as genai
+# Importa o cliente da API OpenAI
 from openai import OpenAI
 
+# Define o formato do corpo esperado na criação de testes
 class TestRequest(BaseModel):
     prompt: str
     questions_count: int
@@ -17,38 +27,48 @@ class TestRequest(BaseModel):
     difficulty: str
     provider: str
 
+# Define a estrutura de resposta de um teste
 class TestResponse(BaseModel):
     id: int
     title: str
     questions: dict
 
 # ✅ Configurar a API Gemini usando variável de ambiente
+# Configura a chave da API Gemini a partir da variável de ambiente
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+# Configura a chave da API Gemini a partir da variável de ambiente
 if GEMINI_API_KEY:
+# Configura a chave da API Gemini a partir da variável de ambiente
     genai.configure(api_key=GEMINI_API_KEY)
 else:
+# Configura a chave da API Gemini a partir da variável de ambiente
     raise ValueError("GEMINI_API_KEY não foi configurada nas variáveis de ambiente.")
 
 # Configurar OpenAI
+# Configura a chave da API OpenAI a partir da variável de ambiente
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+# Configura a chave da API OpenAI a partir da variável de ambiente
 if OPENAI_API_KEY:
+# Configura a chave da API OpenAI a partir da variável de ambiente
     client = OpenAI(api_key=OPENAI_API_KEY)
 else:
+# Configura a chave da API OpenAI a partir da variável de ambiente
     raise ValueError("OPENAI_API_KEY não foi configurada nas variáveis de ambiente.")    
 
+# Define o nome do arquivo SQLite usado como banco de dados
 DATABASE = "tests.db"
 
+# Importa o decorador asynccontextmanager para o ciclo de vida do FastAPI
 from contextlib import asynccontextmanager
 
 @asynccontextmanager
+# Função executada no início da aplicação para configurar o banco de dados
 async def lifespan(app: FastAPI):
     print("🔄 Configurando o banco de dados...")
+# Define o nome do arquivo SQLite usado como banco de dados
     conn = sqlite3.connect(DATABASE)
     cursor = conn.cursor()
 
-    # cursor.execute('''
-    #     DROP TABLE tests 
-    # ''')
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS tests (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -61,8 +81,10 @@ async def lifespan(app: FastAPI):
     yield
     print("✅ Banco de dados configurado com sucesso!")
 
+# Cria a instância da aplicação FastAPI
 app = FastAPI(lifespan=lifespan)
 
+# Configura o middleware CORS para permitir requisições de outras origens
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:3000", "http://localhost:3001"],
@@ -71,6 +93,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Endpoint para criação de um novo teste com IA
 @app.post("/tests")
 async def create_test(request: TestRequest):
     prompt = f"""
@@ -109,7 +132,9 @@ async def create_test(request: TestRequest):
     """
 
     if request.provider == "gemini":
+# Configura a chave da API Gemini a partir da variável de ambiente
         if not GEMINI_API_KEY:
+# Configura a chave da API Gemini a partir da variável de ambiente
             raise HTTPException(status_code=500, detail="GEMINI_API_KEY não configurada.")
         model = genai.GenerativeModel("gemini-1.5-flash")
         response = model.generate_content(prompt)
@@ -130,7 +155,9 @@ async def create_test(request: TestRequest):
 
 
     elif request.provider == "openai":
+# Configura a chave da API OpenAI a partir da variável de ambiente
         if not OPENAI_API_KEY:
+# Configura a chave da API OpenAI a partir da variável de ambiente
             raise HTTPException(status_code=500, detail="OPENAI_API_KEY não configurada.")
         
         completion = client.chat.completions.create(
@@ -156,6 +183,7 @@ async def create_test(request: TestRequest):
         raise HTTPException(status_code=400, detail="Provedor de IA inválido. Use 'gemini' ou 'openai'.")
 
 
+# Define o nome do arquivo SQLite usado como banco de dados
     conn = sqlite3.connect(DATABASE)
     cursor = conn.cursor()
     cursor.execute(
@@ -167,8 +195,10 @@ async def create_test(request: TestRequest):
 
     return {"message": "Teste criado com sucesso"}
 
+# Endpoint que retorna a lista de testes existentes no banco de dados
 @app.get("/tests")
 def get_tests():
+# Define o nome do arquivo SQLite usado como banco de dados
     conn = sqlite3.connect(DATABASE)
     cursor = conn.cursor()
     cursor.execute("SELECT id, title, questions FROM tests ORDER BY id DESC")
@@ -190,8 +220,10 @@ def get_tests():
 
     return results
 
+# Endpoint que permite excluir um teste pelo ID
 @app.delete("/tests/{test_id}")
 def delete_test(test_id: int):
+# Define o nome do arquivo SQLite usado como banco de dados
     conn = sqlite3.connect(DATABASE)
     cursor = conn.cursor()
     cursor.execute("DELETE FROM tests WHERE id = ?", (test_id,))
@@ -199,6 +231,7 @@ def delete_test(test_id: int):
     conn.close()
     return {"message": "Teste excluído"}
 
+# Endpoint que atualiza as questões de um teste específico
 @app.put("/tests/{test_id}/questions")
 def update_test_questions(test_id: int, questions: dict = Body(...)):
     try:
@@ -206,6 +239,7 @@ def update_test_questions(test_id: int, questions: dict = Body(...)):
     except Exception:
         raise HTTPException(status_code=400, detail="Formato de perguntas inválido. Deve ser um JSON.")
 
+# Define o nome do arquivo SQLite usado como banco de dados
     conn = sqlite3.connect(DATABASE)
     cursor = conn.cursor()
     cursor.execute(
@@ -217,11 +251,13 @@ def update_test_questions(test_id: int, questions: dict = Body(...)):
 
     return {"message": "Perguntas atualizadas com sucesso"}
 
+# Modelo de entrada para avaliação de resposta discursiva
 class EvaluationRequest(BaseModel):
     question: str
     correct_answer: str
     user_answer: str
 
+# Endpoint que avalia a resposta do aluno comparando com o gabarito
 @app.post("/evaluate")
 async def evaluate_answer(request: EvaluationRequest):  
     if not request.question or not request.correct_answer:
@@ -251,6 +287,7 @@ async def evaluate_answer(request: EvaluationRequest):
     """
 
     try:
+# Configura a chave da API OpenAI a partir da variável de ambiente
         if OPENAI_API_KEY:
             completion = client.chat.completions.create(
                 model="gpt-4",
@@ -259,6 +296,7 @@ async def evaluate_answer(request: EvaluationRequest):
                 max_tokens=300,
             )
             content = completion.choices[0].message.content.strip()
+# Configura a chave da API Gemini a partir da variável de ambiente
         elif GEMINI_API_KEY:
             model = genai.GenerativeModel("gemini-1.5-flash")
             response = model.generate_content(prompt)
