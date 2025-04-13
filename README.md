@@ -1,4 +1,4 @@
-# Sistema de Geração de Testes com IA
+# Sistema de Geração de Testes com IA 
 
 Este projeto é um sistema backend desenvolvido em Python que utiliza inteligência artificial para gerar questões de prova com base em conteúdos fornecidos. Ele foi elaborado como parte da disciplina da pós-graduação e demonstra integração entre IA, banco de dados e uma API para comunicação com um frontend.
 
