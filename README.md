@@ -30,42 +30,35 @@ Este projeto é um sistema backend desenvolvido em Python que utiliza inteligên
 
 ---
 
-## ⚙️ Instalação e Execução Local
+## 🌐 APIs Externas Utilizadas
 
-### Pré-requisitos
+Este sistema integra inteligência artificial por meio de **duas APIs externas principais**: OpenAI e Google Gemini. Ambas são utilizadas para gerar questões com base em conteúdos enviados pelo usuário. Contudo, devido a falta de tempo para testes, apenas a IA da OpenAI está disponível para ser avaliada no sistema.
 
-- Python 3.11 ou superior
-- Docker 
-- Git
+---
 
-### 1. Clone o repositório
+### 🔸 1. OpenAI API (ChatGPT / GPT-4)
 
-```bash
-git clone https://github.com/seu-usuario/SistemaTestesIA-backend.git
-cd SistemaTestesIA-backend
-```
+- **Site**: [https://platform.openai.com](https://platform.openai.com)
+- **Cadastro**: Necessário. Fiz meu cadastro de usuário, criei uma conta, gerei e disponibilizei uma chave de API.
+- **Licença**: Comercial e paga. Possui plano gratuito limitado e planos pagos com diferentes faixas de uso, contudo preferi utilizar a versão paga.
+- **Chave usada**: Deve ser inserida no arquivo `.env` como `OPENAI_API_KEY`.
+- **Endpoint utilizado**:
+  - `https://api.openai.com/v1/chat/completions`
+- **Modelo**: `"gpt-4"` ou `"gpt-3.5-turbo"`.
 
-### 2. Crie o ambiente virtual (opcional, mas recomendado)
+---
 
-```bash
-python -m venv venv
-source venv/bin/activate  # no Linux/macOS
-venv\Scripts\activate     # no Windows
-```
+### 🔸 2. Google Gemini API (PaLM 2 / Gemini Pro)
 
-### 3. Instale as dependências
+Está no sistema mas não foi disponibilizado o seu uso pois não houve tempo para testar a contento.
 
-```bash
-pip install -r requirements.txt
-```
-
-### 4. Execute a aplicação
-
-```bash
-uvicorn main:app --reload
-```
-
-A API estará disponível em: [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
+- **Site**: [https://makersuite.google.com](https://makersuite.google.com) ou [https://ai.google.dev](https://ai.google.dev)
+- **Cadastro**: Necessário. Requer conta Google e habilitação da API via Google Cloud Platform (GCP).
+- **Licença**: Comercial. Gratuito com limites mensais, e opções pagas via GCP.
+- **Chave usada**: Deve ser inserida no arquivo `.env` como `GEMINI_API_KEY`.
+- **Endpoint utilizado**:
+  - `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent`
+- **Modelo**: `"gemini-pro"` 
 
 ---
 
@@ -166,35 +159,44 @@ Isso iniciará tanto o backend (porta 8000) quanto o frontend (porta 3000).
 
 ---
 
-## 🌐 APIs Externas Utilizadas
+## ⚙️ Instalação e Execução Local
 
-Este sistema integra inteligência artificial por meio de **duas APIs externas principais**: OpenAI e Google Gemini. Ambas são utilizadas para gerar questões com base em conteúdos enviados pelo usuário. Contudo, devido a falta de tempo para testes, apenas a IA da OpenAI está disponível para ser avaliada no sistema.
+### Pré-requisitos
+
+- Python 3.11 ou superior
+- Docker 
+- Git
+
+### 1. Clone o repositório
+
+```bash
+git clone https://github.com/seu-usuario/SistemaTestesIA-backend.git
+cd SistemaTestesIA-backend
+```
+
+### 2. Crie o ambiente virtual (opcional, mas recomendado)
+
+```bash
+python -m venv venv
+source venv/bin/activate  # no Linux/macOS
+venv\Scripts\activate     # no Windows
+```
+
+### 3. Instale as dependências
+
+```bash
+pip install -r requirements.txt
+```
+
+### 4. Execute a aplicação
+
+```bash
+uvicorn main:app --reload
+```
+
+A API estará disponível em: [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
 
 ---
-
-### 🔸 1. OpenAI API (ChatGPT / GPT-4)
-
-- **Site**: [https://platform.openai.com](https://platform.openai.com)
-- **Cadastro**: Necessário. Fiz meu cadastro de usuário, criei uma conta, gerei e disponibilizei uma chave de API.
-- **Licença**: Comercial e paga. Possui plano gratuito limitado e planos pagos com diferentes faixas de uso, contudo preferi utilizar a versão paga.
-- **Chave usada**: Deve ser inserida no arquivo `.env` como `OPENAI_API_KEY`.
-- **Endpoint utilizado**:
-  - `https://api.openai.com/v1/chat/completions`
-- **Modelo**: `"gpt-4"` ou `"gpt-3.5-turbo"`.
-
----
-
-### 🔸 2. Google Gemini API (PaLM 2 / Gemini Pro)
-
-Está no sistema mas não foi disponibilizado o seu uso pois não houve tempo para testar a contento.
-
-- **Site**: [https://makersuite.google.com](https://makersuite.google.com) ou [https://ai.google.dev](https://ai.google.dev)
-- **Cadastro**: Necessário. Requer conta Google e habilitação da API via Google Cloud Platform (GCP).
-- **Licença**: Comercial. Gratuito com limites mensais, e opções pagas via GCP.
-- **Chave usada**: Deve ser inserida no arquivo `.env` como `GEMINI_API_KEY`.
-- **Endpoint utilizado**:
-  - `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent`
-- **Modelo**: `"gemini-pro"` 
 
 ## 📚 Documentação da API - Endpoints
 
