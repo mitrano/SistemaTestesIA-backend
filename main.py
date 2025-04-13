@@ -18,6 +18,8 @@ import os
 import google.generativeai as genai
 # Importa o cliente da API OpenAI
 from openai import OpenAI
+import traceback
+
 
 # Define o formato do corpo esperado na criação de testes
 class TestRequest(BaseModel):
@@ -146,14 +148,6 @@ async def create_test(request: TestRequest):
         except json.JSONDecodeError:
             raise HTTPException(status_code=500, detail="A IA não respondeu com um JSON válido.")
 
-
-        try:
-            json.loads(questions_raw)
-            questions = questions_raw
-        except json.JSONDecodeError:
-            raise HTTPException(status_code=500, detail="Resposta da Gemini não está em formato JSON válido.")
-
-
     elif request.provider == "openai":
 # Configura a chave da API OpenAI a partir da variável de ambiente
         if not OPENAI_API_KEY:
@@ -167,17 +161,44 @@ async def create_test(request: TestRequest):
         )        
         questions_raw = completion.choices[0].message.content.strip()
 
+        # try:
+        #     json.loads(questions_raw)
+        # except json.JSONDecodeError as e:
+        #     print("❌ Erro ao decodificar JSON da IA:")
+        #     print("Resposta bruta da IA:", questions_raw)
+        #     print("Mensagem do erro:", str(e))
+        #     traceback.print_exc()  # Mostra o rastreamento completo no console (opcional, mas útil)
+        #     raise HTTPException(status_code=500, detail="A IA não respondeu com um JSON válido.")
+
         try:
-            json.loads(questions_raw)
-        except json.JSONDecodeError:
+            
+            if is_valid_json(questions_raw):
+                parsed = json.loads(questions_raw)
+            else:
+                # Extrai apenas o bloco JSON de "questions"
+                json_start = questions_raw.find('{')
+                json_end = questions_raw.rfind('}') + 1
+                json_str = questions_raw[json_start:json_end] + "]}"
+
+                parsed = json.loads(json_str)
+
+            # Garante que seja um dicionário com lista de questões
+            if isinstance(parsed, dict) and "questions" in parsed:
+                questions_list = []
+                for q in parsed["questions"]:
+                    if all(k in q for k in ["question", "type", "options", "answer"]):
+                        questions_list.append(q)
+                questions = json.dumps({"questions": questions_list}, ensure_ascii=False)
+            else:
+                raise ValueError("Formato inesperado no JSON")
+
+        except json.JSONDecodeError as e:
+            print("❌ Erro ao decodificar JSON da IA:")
+            print("Resposta bruta da IA:", questions_raw)
+            print("Mensagem do erro:", str(e))
+            traceback.print_exc()
             raise HTTPException(status_code=500, detail="A IA não respondeu com um JSON válido.")
 
-
-        try:
-            json.loads(questions_raw)
-            questions = questions_raw
-        except json.JSONDecodeError:
-            raise HTTPException(status_code=500, detail="Resposta do OpenAI não está em formato JSON válido.")
 
     else:
         raise HTTPException(status_code=400, detail="Provedor de IA inválido. Use 'gemini' ou 'openai'.")
@@ -322,3 +343,10 @@ async def evaluate_answer(request: EvaluationRequest):
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Erro ao avaliar resposta: {str(e)}")
+
+def is_valid_json(s):
+    try:
+        json.loads(s)
+        return True
+    except json.JSONDecodeError:
+        return False
