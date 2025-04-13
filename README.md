@@ -2,6 +2,15 @@
 
 Este projeto é um sistema backend desenvolvido em Python que utiliza inteligência artificial para gerar questões de prova com base em conteúdos fornecidos. Ele foi elaborado como parte da disciplina da pós-graduação e demonstra integração entre IA, banco de dados e uma API para comunicação com um frontend.
 
+## 🧠 Funcionalidade
+
+- Recebe um conteúdo textual.
+- Gera questões de múltipla escolha ou discursivas utilizando IA.
+- Armazena as questões em banco de dados SQLite.
+- Expõe endpoints RESTful para interação com a aplicação.
+
+---
+
 ## 📁 Estrutura do Projeto
 
 - `main.py` — Arquivo principal com a API desenvolvida usando FastAPI.
@@ -149,19 +158,125 @@ Isso iniciará tanto o backend (porta 8000) quanto o frontend (porta 3000).
 
 ---
 
+## 📚 Documentação da API - Endpoints
 
-## 🧠 Funcionalidade
-
-- Recebe um conteúdo textual.
-- Gera questões de múltipla escolha ou discursivas utilizando IA.
-- Armazena as questões em banco de dados SQLite.
-- Expõe endpoints RESTful para interação com a aplicação.
+A seguir estão listados os principais endpoints disponíveis no backend para criação, consulta, atualização e exclusão de questionários e questões.
 
 ---
 
-## 📄 Licença
+### 🔹 POST /generate
 
-Este projeto foi desenvolvido exclusivamente para fins educacionais e não possui fins comerciais.
+Gera questões com base em um conteúdo textual enviado.
+
+**Request Body (JSON):**
+
+```json
+{
+  "conteudo": "Texto base para geração das questões",
+  "quantidade": 5,
+  "tipo": "multipla_escolha"  // ou "discursiva"
+}
+```
+
+**Response:**
+
+```json
+[
+  {
+    "id": 1,
+    "enunciado": "Qual a capital do Brasil?",
+    "tipo": "multipla_escolha",
+    "alternativas": ["Brasília", "Rio de Janeiro", "São Paulo", "Salvador"],
+    "resposta_correta": "Brasília"
+  }
+]
+```
+
+---
+
+### 🔹 GET /questionarios
+
+Retorna a lista de todos os questionários cadastrados.
+
+**Response:**
+
+```json
+[
+  {
+    "id": 1,
+    "titulo": "Questionário de História",
+    "data_criacao": "2025-04-10T12:00:00"
+  }
+]
+```
+
+---
+
+### 🔹 GET /questionarios/{id}
+
+Retorna um questionário específico pelo ID.
+
+**Path Parameter:**
+
+- `id` (int): ID do questionário
+
+**Response:**
+
+```json
+{
+  "id": 1,
+  "titulo": "Questionário de História",
+  "questoes": [...]
+}
+```
+
+---
+
+### 🔹 PUT /questionarios/{id}
+
+Atualiza os dados de um questionário.
+
+**Path Parameter:**
+
+- `id` (int): ID do questionário
+
+**Request Body (JSON):**
+
+```json
+{
+  "titulo": "Novo título do questionário"
+}
+```
+
+**Response:**
+
+```json
+{
+  "id": 1,
+  "titulo": "Novo título do questionário"
+}
+```
+
+---
+
+### 🔹 DELETE /questionarios/{id}
+
+Remove um questionário e suas questões associadas.
+
+**Path Parameter:**
+
+- `id` (int): ID do questionário
+
+**Response:**
+
+```json
+{ "detail": "Questionário removido com sucesso" }
+```
+
+---
+
+📌 Para detalhes completos e testes interativos, acesse o Swagger da aplicação:  
+[http://localhost:8000/docs](http://localhost:8000/docs)
 
 ---
 
