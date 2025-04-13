@@ -158,6 +158,36 @@ Isso iniciará tanto o backend (porta 8000) quanto o frontend (porta 3000).
 
 ---
 
+## 🌐 APIs Externas Utilizadas
+
+Este sistema integra inteligência artificial por meio de **duas APIs externas principais**: OpenAI e Google Gemini. Ambas são utilizadas para gerar questões com base em conteúdos enviados pelo usuário. Contudo, devido a falta de tempo para testes, apenas a IA da OpenAI está disponível para ser avaliada no sistema.
+
+---
+
+### 🔸 1. OpenAI API (ChatGPT / GPT-4)
+
+- **Site**: [https://platform.openai.com](https://platform.openai.com)
+- **Cadastro**: Necessário. Fiz meu cadastro de usuário, criei uma conta, gerei e disponibilizei uma chave de API.
+- **Licença**: Comercial e paga. Possui plano gratuito limitado e planos pagos com diferentes faixas de uso, contudo preferi utilizar a versão paga.
+- **Chave usada**: Deve ser inserida no arquivo `.env` como `OPENAI_API_KEY`.
+- **Endpoint utilizado**:
+  - `https://api.openai.com/v1/chat/completions`
+- **Modelo**: `"gpt-4"` ou `"gpt-3.5-turbo"`.
+
+---
+
+### 🔸 2. Google Gemini API (PaLM 2 / Gemini Pro)
+
+Está no sistema mas não foi disponibilizado o seu uso pois não houve tempo para testar a contento.
+
+- **Site**: [https://makersuite.google.com](https://makersuite.google.com) ou [https://ai.google.dev](https://ai.google.dev)
+- **Cadastro**: Necessário. Requer conta Google e habilitação da API via Google Cloud Platform (GCP).
+- **Licença**: Comercial. Gratuito com limites mensais, e opções pagas via GCP.
+- **Chave usada**: Deve ser inserida no arquivo `.env` como `GEMINI_API_KEY`.
+- **Endpoint utilizado**:
+  - `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent`
+- **Modelo**: `"gemini-pro"` 
+
 ## 📚 Documentação da API - Endpoints
 
 A seguir estão listados os principais endpoints disponíveis no backend para criação, consulta, atualização e exclusão de questionários e questões.
