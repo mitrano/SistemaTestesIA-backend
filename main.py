@@ -171,7 +171,7 @@ async def create_test(request: TestRequest):
 def get_tests():
     conn = sqlite3.connect(DATABASE)
     cursor = conn.cursor()
-    cursor.execute("SELECT id, title, questions FROM tests")
+    cursor.execute("SELECT id, title, questions FROM tests ORDER BY id DESC")
     tests = cursor.fetchall()
     conn.close()
 
