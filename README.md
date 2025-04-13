@@ -2,7 +2,7 @@
 
 Este projeto é um sistema backend desenvolvido em Python que utiliza inteligência artificial para gerar questões de prova com base em conteúdos fornecidos. Ele foi elaborado como parte da disciplina da pós-graduação e demonstra integração entre IA, banco de dados e uma API para comunicação com um frontend.
 
-## 🧠 Funcionalidade
+## 🧠 Funcionalidades
 
 - Recebe um conteúdo textual.
 - Gera questões de múltipla escolha ou discursivas utilizando IA.
@@ -11,7 +11,7 @@ Este projeto é um sistema backend desenvolvido em Python que utiliza inteligên
 
 ---
 
-## Diagrama do Sistema
+## 🗺 Diagrama do Sistema
 
 <p align="center">
   <img src="docs/Diagramadosistema.jpg" alt="Diagrama da Arquitetura do Sistema" width="600">
