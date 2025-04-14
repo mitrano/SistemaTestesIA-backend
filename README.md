@@ -323,4 +323,6 @@ Remove um questionário e suas questões associadas.
 ## 👨‍🏫 Autor
 
 Ricardo Mitrano  
-Aluno da Pós-Graduação em Desenvolvimento Fullstack
+Aluno da Pós-Graduação em Desenvolvimento Fullstack da PUC-Rio
+Módulo Bckend Avançado
+Abril/2025
